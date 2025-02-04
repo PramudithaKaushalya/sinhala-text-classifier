@@ -5,7 +5,7 @@ def predict(model, input_text, vocab):
     """
     Predict if a text is adult or non-adult based on the trained model.
     Parameters:
-        model (TextClassifier): The trained model.
+        model (Model): The trained model.
         input_text (str): The input text to classify.
         vocab (dict): The vocabulary used for tokenizing the input text.
     Returns:
@@ -15,8 +15,8 @@ def predict(model, input_text, vocab):
     # Tokenize the input text
     tokens = tokenize_text(input_text)
 
-    # Convert tokens to indices
-    token_indices = [vocab.get(token, vocab['<PAD>']) for token in tokens]
+    # Convert tokens to indices, use '<UNK>' if word not in vocab
+    token_indices = [vocab.get(token, vocab.get('<UNK>', 0)) for token in tokens]
     token_indices = torch.tensor(token_indices, dtype=torch.long).unsqueeze(0)  # Add batch dimension
 
     # Predict using the model
@@ -27,3 +27,4 @@ def predict(model, input_text, vocab):
         predicted_class = torch.argmax(probabilities, dim=1).item()
 
     return predicted_class, probabilities
+
